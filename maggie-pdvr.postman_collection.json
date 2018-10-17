@@ -1,0 +1,249 @@
+{
+	"variables": [],
+	"info": {
+		"name": "maggie-pdvr",
+		"_postman_id": "b1792ee0-346e-3574-280e-f4500e70de2f",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "users",
+			"description": "",
+			"item": [
+				{
+					"name": "https://v.api.yodux.com/gatekeeper/users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var response_time = postman.getEnvironmentVariable(\"response_time\");",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"Response time less than 5 seconds\"] = responseTime < response_time; // milliseconds",
+									"tests[\"id is available\"] = jsonData[0]._id !== '';",
+									"postman.setEnvironmentVariable(\"user_id_1\", jsonData[0]._id);",
+									"postman.setEnvironmentVariable(\"user_id_2\", jsonData[1]._id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://v.api.yodux.com/gatekeeper/users",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "home",
+			"description": "",
+			"item": [
+				{
+					"name": "https://v.api.yodux.com/crystalball/affinities/home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var response_time = postman.getEnvironmentVariable(\"response_time\");",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"Response time less than 5 seconds\"] = responseTime < response_time; // milliseconds",
+									"tests[\"id is available\"] = jsonData.primary[0].availability.id !== '';",
+									"postman.setEnvironmentVariable(\"source_id\", jsonData.primary[0].availability.source);",
+									"postman.setEnvironmentVariable(\"event_start\", jsonData.primary[0].availability.s);",
+									"postman.setEnvironmentVariable(\"event_end\", jsonData.primary[0].availability.e);",
+									"postman.setEnvironmentVariable(\"entity_id\", jsonData.primary[0].availability.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://v.api.yodux.com/crystalball/affinities/home",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ratings\": \"\", \"sources\": \"l3\", \"device_id\": \"PAN900016592\", \"user_id\": \"{{user_id_1}}\"}"
+						},
+						"description": "Getting DVR home data"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "record_events",
+			"description": "",
+			"item": [
+				{
+					"name": "https://v.api.pqadux.com/scheduler/schedules",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var response_time = postman.getEnvironmentVariable(\"response_time\");",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"Response time less than 5 seconds\"] = responseTime < response_time; // milliseconds",
+									"tests[\"schedule accepted\"] = jsonData.schedule.status === 'accepted';",
+									"tests[\"user_id is saved in array\"] = jsonData.schedule.users[0].id === postman.getEnvironmentVariable(\"user_id_1\");",
+									"postman.setEnvironmentVariable(\"schedule_id\", jsonData.schedule._id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://v.api.yodux.com/scheduler/schedules",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"type\":\"event\",\"_id\":null,\"entity_id\":\"{{entity_id}}\",\"user_id\":\"{{user_id_1}}\",\"users\": [{\"id\": \"{{user_id_1}}\"}],\"source_id\":\"{{source_id}}\",\"destination\":\"home\",\"event_start\":\"{{event_start}}\",\"event_end\":\"{{event_end}}\",\"record_priority\":2,\"delete_priority\":1,\"start_offset\":0,\"end_offset\":0}"
+						},
+						"description": "Create a schedule - record an event"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "update event",
+			"description": "",
+			"item": [
+				{
+					"name": "https://v.api.pqadux.com/scheduler/schedules",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var response_time = postman.getEnvironmentVariable(\"response_time\");",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"Response time less than 5 seconds\"] = responseTime < response_time; // milliseconds",
+									"tests[\"schedule accepted\"] = jsonData.schedule.status === 'accepted';",
+									"tests[\"user_id_1 is saved in array\"] = jsonData.schedule.users[0].id === postman.getEnvironmentVariable(\"user_id_1\");",
+									"tests[\"user_id_2 is saved in array\"] = jsonData.schedule.users[1].id === postman.getEnvironmentVariable(\"user_id_2\");",
+									"postman.setEnvironmentVariable(\"schedule_id\", jsonData.schedule._id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://v.api.yodux.com/scheduler/schedules",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"type\":\"event\",\"_id\":\"{{schedule_id}}\",\"entity_id\":\"{{entity_id}}\",\"user_id\":\"{{user_id_1}}\",\"users\": [{\"id\": \"{{user_id_1}}\"},{\"id\": \"{{user_id_2}}\"},{\"id\": \"{{user_id_3}}\"}],\"source_id\":\"{{source_id}}\",\"destination\":\"home\",\"event_start\":\"{{event_start}}\",\"event_end\":\"{{event_end}}\",\"record_priority\":2,\"delete_priority\":1,\"start_offset\":0,\"end_offset\":0}"
+						},
+						"description": "Tag user to event"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "delete_events",
+			"description": "",
+			"item": [
+				{
+					"name": "https://v.api.pqadux.com/scheduler/schedules/delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var response_time = postman.getEnvironmentVariable(\"response_time\");",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"Response time less than 5 seconds\"] = responseTime < response_time; // milliseconds",
+									"tests[\"schedule deleted\"] = jsonData.schedule.status === 'deleted';"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://v.api.yodux.com/scheduler/schedules/delete",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"_id\":\"{{schedule_id}}\"}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
