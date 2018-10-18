@@ -244,6 +244,63 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "List schedules",
+			"description": "",
+			"item": [
+				{
+					"name": "https://v.api.yodux.com/scheduler/schedules/get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var response_time = postman.getEnvironmentVariable(\"response_time\");",
+									"var user_removed = postman.getEnvironmentVariable(\"user_id_2\");",
+									"var record;",
+									"var i;",
+									"var found = false;",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"Response time less than 5 seconds\"] = responseTime < response_time; // milliseconds",
+									"for (record = 0; record <= jsonData.lenght; record++) {",
+									"  for (i = 0; i <= jsonData[record].users.lenght; i++) {",
+									"      if (jsonData.users[i] === user_removed) {",
+									"        found = true;  ",
+									"      }",
+									"  }",
+									"}",
+									"tests[\"User is removed from array\"] = found === false;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://v.api.yodux.com/scheduler/schedules/get",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
